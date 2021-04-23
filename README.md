@@ -2,6 +2,20 @@
 
 A command-line tool to help Ruby developers refactor class/module namespacing.
 
+## Contents
+
+<!-- MarkdownTOC autolink=true -->
+
+- [Intro](#intro)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Example](#example)
+- [More usage info](#more-usage-info)
+
+<!-- /MarkdownTOC -->
+
+## Intro
+
 Renamespaces a Ruby source file:
 
 - Moves the file
@@ -12,14 +26,7 @@ Renamespaces a Ruby source file:
 
 Class/module namespaces are derived from the paths provided.
 
-## Contents
-
-<!-- MarkdownTOC autolink=true -->
-
-- [Installation](#installation)
-- [Usage](#usage)
-
-<!-- /MarkdownTOC -->
+If you change the number of namespaces, expect to have to run RuboCop autocorrect afterwards to clean up formatting.
 
 ## Installation
 
@@ -32,16 +39,46 @@ $ gem install --clear-sources --source "https://$GITHUB_USERNAME:$GITHUB_ACCESS_
 ## Usage
 
 ```bash
-$ renamespace
+$ renamespace SOURCE_FILE_PATH DESTINATION_FILE_PATH
 ```
 
-e.g.:
+## Example
+
+With:
+
+```ruby
+# lib/my_app/models/site.rb
+
+module MyApp
+  module Models
+    class Site < BaseModel
+    end
+  end
+end
+```
+
+Run:
 
 ```bash
-$ renamespace lib/dex_registration/repositories/cursors.rb lib/dex_registration/cursors/repository.rb
+$ renamespace lib/my_app/models/site.rb lib/my_app/sites/model.rb
 ```
 
-For more info, see:
+Result:
+
+```ruby
+# lib/my_app/sites/model.rb
+
+module MyApp
+  module Sites
+    class Model < Models::BaseModel
+    end
+  end
+end
+```
+
+## More usage info
+
+See:
 
 ```bash
 $ renamespace --help

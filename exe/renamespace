@@ -21,6 +21,8 @@ Clamp do
     - Moves the associated spec file
 
     Class/module namespaces are derived from the paths provided.
+
+    If you change the number of namespaces, expect to have to run RuboCop autocorrect afterwards to clean up formatting.
   TEXT
 
   parameter 'SOURCE_FILE_PATH', 'The current path of the Ruby source code file to renamespace'
