@@ -76,10 +76,15 @@ class Renamespace # rubocop:disable Metrics/ClassLength
       old_parent_namespace = namespace_element_replacements.last(i + 1).map(&:last).reverse.join('::')
       old_parent_namespace += '::' unless old_parent_namespace.empty?
       if namespace_element_old
-        # Replace existing namespace
+        # Replacing existing namespace
         content.sub!(/(class|module) #{namespace_element_old}\b( < (\S+))?/) do
-          "#{Regexp.last_match(1)} RENAMESPACED_#{namespace_element_new}" +
-            (Regexp.last_match(3) ? " < #{old_parent_namespace}#{Regexp.last_match(3)}" : '')
+          klass_line = "#{Regexp.last_match(1)} RENAMESPACED_#{namespace_element_new}"
+          Regexp.last_match(3)&.tap do |superclass_orig|
+            klass_line += ' < '
+            klass_line += old_parent_namespace unless superclass_orig.start_with?('::')
+            klass_line += superclass_orig
+          end
+          klass_line
         end
       else
         # Adding new namespace

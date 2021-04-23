@@ -154,5 +154,41 @@ RSpec.describe Renamespace do
         expect(renamespace.send(:renamespace_file_content, source_content)).to eq(expected_result_content)
       end
     end
+
+
+    context 'with inheritance from a root class' do
+      let(:paths) do
+        %w[
+          lib/a/x.rb
+          lib/b/x.rb
+        ]
+      end
+
+      let(:source_content) do
+        <<~RUBY
+          module App
+            module A
+              class X < ::Ultra
+              end
+            end
+          end
+        RUBY
+      end
+
+      let(:expected_result_content) do
+        <<~RUBY
+          module App
+            module B
+              class X < ::Ultra
+              end
+            end
+          end
+        RUBY
+      end
+
+      it 'preserves the namespacing of the superclass' do
+        expect(renamespace.send(:renamespace_file_content, source_content)).to eq(expected_result_content)
+      end
+    end
   end
 end
