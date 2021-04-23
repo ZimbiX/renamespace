@@ -22,12 +22,12 @@ open() {
 version=$(grep -oE "[0-9][^'\"]*" $VERSION_FILE)
 
 info "Building the gem..."
-gem build greensync-postgres
+gem build renamespace
 
-info "Pushing greensync-postgres-"${version}".gem to GitHub Package Registry..."
+info "Pushing renamespace-"${version}".gem to GitHub Package Registry..."
 gem push --key github \
   --host https://rubygems.pkg.github.com/greensync \
-  greensync-postgres-"${version}".gem
+  renamespace-"${version}".gem
 
 info "Creating a draft GitHub release..."
 auto/with-deploytools create-github-release -d -v "${version}" \
