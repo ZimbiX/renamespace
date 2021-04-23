@@ -7,9 +7,10 @@ require 'facets/string/camelcase'
 require 'rainbow'
 
 class Renamespace # rubocop:disable Metrics/ClassLength
-  def initialize(source_file_path:, destination_file_path:)
+  def initialize(source_file_path:, destination_file_path:, can_omit_prefixes_count:)
     @source_file_path = source_file_path
     @destination_file_path = destination_file_path
+    @can_omit_prefixes_count = can_omit_prefixes_count
   end
 
   def call
@@ -22,14 +23,14 @@ class Renamespace # rubocop:disable Metrics/ClassLength
 
   private
 
-  attr_reader :source_file_path, :destination_file_path
+  attr_reader :source_file_path, :destination_file_path, :can_omit_prefixes_count
 
   def renamespace_file
     puts '%s -> %s' % [namespace_for_path(source_file_path), namespace_for_path(destination_file_path)]
     content_new = renamespace_file_content(File.read(source_file_path))
     create_directories_to_file(destination_file_path)
     File.write(destination_file_path, content_new)
-    File.delete(source_file_path)
+    File.delete(source_file_path) unless source_file_path == destination_file_path
   end
 
   def move_spec_file
@@ -41,7 +42,7 @@ class Renamespace # rubocop:disable Metrics/ClassLength
     FileUtils.mv(
       spec_path(source_file_path),
       spec_path(destination_file_path),
-    )
+    ) unless source_file_path == destination_file_path
   end
 
   def expand_relative_requires_within_all_files
@@ -58,12 +59,23 @@ class Renamespace # rubocop:disable Metrics/ClassLength
   end
 
   def rename_within_all_files
+    logged_replacements = []
     all_ruby_file_paths.each do |path|
       content_orig = File.read(path)
-      content_new =
-        content_orig
-          .gsub(namespace_for_path(source_file_path), namespace_for_path(destination_file_path))
-          .gsub(require_for_path(source_file_path), require_for_path(destination_file_path))
+      content_new = content_orig.dup
+      content_new.gsub!(require_for_path(source_file_path), require_for_path(destination_file_path))
+      namespace_elements_source = namespace_elements_for_path(source_file_path)
+      namespace_elements_dest = namespace_elements_for_path(destination_file_path)
+      (1 + can_omit_prefixes_count).times do
+        a, b = namespace_elements_source.join('::'), namespace_elements_dest.join('::')
+        unless logged_replacements.include?([a, b])
+          logged_replacements << [a, b]
+          puts Rainbow('%s -> %s' % [a, b]).blue
+        end
+        content_new.gsub!(a, b)
+        namespace_elements_source.shift
+        namespace_elements_dest.shift
+      end
       File.write(path, content_new) unless content_orig == content_new
     end
   end
@@ -101,6 +113,7 @@ class Renamespace # rubocop:disable Metrics/ClassLength
     %w[
       spec/spec_helper.rb
       renamespace_spec.rb
+      lib/bootstrap.rb
     ]
   end
 

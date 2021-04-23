@@ -28,10 +28,13 @@ Clamp do
   parameter 'SOURCE_FILE_PATH', 'The current path of the Ruby source code file to renamespace'
   parameter 'DESTINATION_FILE_PATH', 'The desired desination path of the file'
 
+  option ['-o', '--can-omit-prefixes'], 'COUNT', 'How many levels of namespacing to omit up to when replacing usages of the class/module. Too low, and some cases may be missed; too high, and some incorrect replacements are likely to occur', default: 0, &method(:Integer)
+
   def execute
     Renamespace.new(
       source_file_path: source_file_path,
       destination_file_path: destination_file_path,
+      can_omit_prefixes_count: can_omit_prefixes,
     ).call
   end
 end
