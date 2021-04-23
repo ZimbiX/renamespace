@@ -1,5 +1,7 @@
 # Renamespace
 
+[![Build status](https://badge.buildkite.com/96fe2532aa6c155b7efc6adc355a6aa58c704c29df1a739df2.svg?branch=master)](https://buildkite.com/gs/renamespace)
+
 A command-line tool to help Ruby developers refactor class/module namespacing.
 
 ## Contents
