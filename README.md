@@ -35,7 +35,7 @@ If you change the number of namespaces, expect to have to run RuboCop autocorrec
 The executable is distributed as a gem. You can install it from GitHub Packages directly like so:
 
 ```bash
-$ gem install --clear-sources --source "https://$GITHUB_USERNAME:$GITHUB_ACCESS_TOKEN@rubygems.pkg.github.com/greensync" renamespace
+$ gem install renamespace --clear-sources --source "https://$GITHUB_USERNAME:$GITHUB_ACCESS_TOKEN@rubygems.pkg.github.com/greensync"
 ```
 
 And then if you're using rbenv:
