@@ -1,4 +1,5 @@
 #!/bin/bash
+
 set -Eeuo pipefail
 
 if [ -f /.docker-rc.d/.docker-bashrc ]; then
@@ -11,14 +12,12 @@ fi
 # We need to do this here because the shared volume we use for gems with
 # docker-compose may have a version that does not match the one we install in
 # the base Docker image.
-set +u
-if ! [ -z "$RUBY_BUNDLER_VERSION" ]; then
+if [ -n "${RUBY_BUNDLER_VERSION-}" ]; then
   actualBundlerVersion=$(bundle -v | cut -d ' ' -f 3)
-  if ! [ "${actualBundlerVersion}" == "${RUBY_BUNDLER_VERSION}" ]; then
+  if [[ "${actualBundlerVersion}" != "${RUBY_BUNDLER_VERSION}" ]]; then
     gem install "bundler:${RUBY_BUNDLER_VERSION}"
   fi
 fi
-set -u
 
 bundle check || bundle install --jobs=100
-exec bundle exec "${@-bash}"
+exec "${@-bash}"

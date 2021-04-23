@@ -8,7 +8,7 @@ services:
       dockerfile: Dockerfile
       target: dev-environment
     working_dir: /work
-    entrypoint: /work/scripts/bundle-exec
+    entrypoint: scripts/entrypoint
     command: bash
     volumes:
       - .:/work

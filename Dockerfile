@@ -12,7 +12,7 @@
 FROM ruby:2.6.5-slim-buster@sha256:7e0fab6fbb9c47713cad699d41c8d22e217141d6ca3d35e76b5dc5a0658820ff \
   AS ruby-base
 
-ENV RUBY_BUNDLER_VERSION '2.1.4'
+ENV RUBY_BUNDLER_VERSION '2.2.15'
 ENV BUNDLE_PATH /usr/local/bundle
 
 RUN apt-get update \
