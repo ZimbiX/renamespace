@@ -1,18 +1,8 @@
 # frozen_string_literal: true
 
-# require 'bundler/inline'
-
-# gemfile do
-#   source 'https://rubygems.org'
-#   gem 'clamp'
-#   gem 'facets'
-#   gem 'rainbow'
-# end
-
 require 'fileutils'
 require 'pathname'
 
-require 'clamp'
 require 'facets/string/camelcase'
 require 'rainbow'
 
