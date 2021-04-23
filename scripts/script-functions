@@ -2,30 +2,18 @@
 
 set -Eeuo pipefail
 
-info() {
-  printf "\\e[32m"
-  printf "\\e[1m"
-  printf '==> '
-  printf "\\e[36m"
-  printf "$1"
-  printf "\\e[0m\\n"
-}
-
-err() {
-  info "\\e[31m$1"
-  exit 1
-}
-
-success() {
-  info "\\e[32m$1"
-}
+green='\e[32m'; blue='\e[36m'; red='\e[31m'; bold='\e[1m'; reset='\e[0m'
+coloured-arrow() { printf "$bold$1==> $2$reset\n"; }
+success() { coloured-arrow "$green" "$1"; }
+info() { coloured-arrow "$blue" "$1"; }
+err() { coloured-arrow "$red" "$1"; exit 1; }
 
 # Log an error, also producing a notification on Gnome
 notify-err() {
   local title="$1"
   local message="$2"
   local notification_file="/tmp/$3"
-  notify-send.sh --icon=error --urgency=low --replace-file="$notification_file" "$title" "$message"
+  try-notify-send --icon=error --urgency=low --replace-file="$notification_file" "$title" "$message"
   err "$title - $message"
 }
 
@@ -33,14 +21,14 @@ notify-err() {
 notify-clear() {
   local notification_file="/tmp/$1"
   if [ -f "$notification_file" ]; then
-    notify-send.sh --close="$(cat "$notification_file")"
+    try-notify-send --close="$(cat "$notification_file")"
   fi
 }
 
 # Use the Gnome notification utility if it exists
 # https://github.com/vlevit/notify-send.sh
-notify-send.sh() {
+try-notify-send() {
   if [ -x "$(command -v notify-send.sh)" ]; then
-    notify-send.sh "$@"
+    command notify-send.sh "$@"
   fi
 }

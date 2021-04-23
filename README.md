@@ -12,6 +12,7 @@ A command-line tool to help Ruby developers refactor class/module namespacing.
 - [Example](#example)
 - [More usage info](#more-usage-info)
 - [Development](#development)
+  - [Pre-push hook](#pre-push-hook)
   - [Release](#release)
 
 <!-- /MarkdownTOC -->
@@ -93,6 +94,17 @@ $ renamespace --help
 ```
 
 ## Development
+
+### Pre-push hook
+
+This hook runs style checks and tests.
+
+To set up the pre-push hook:
+
+```bash
+$ echo -e "#\!/bin/bash\n\$(dirname \$0)/../../auto/pre-push-hook" > .git/hooks/pre-push
+chmod +x .git/hooks/pre-push
+```
 
 ### Release
 

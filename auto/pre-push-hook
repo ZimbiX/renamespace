@@ -1,0 +1,29 @@
+#!/bin/bash
+
+set -Eeuo pipefail
+
+cd "$(dirname "$0")/.."
+
+. scripts/script-functions
+
+info 'Running pre-push hook...'
+
+on-exit() {
+  [[ -n "${succeeded-}" ]] || notify-err renamespace "Pre-push checks failed" renamespace-pre-push-hook-failed
+}
+trap on-exit EXIT
+
+info 'Checking for uncommitted changes...'
+[[ -z $(git status -s) ]] || err 'ERROR: You have uncommited changes'
+
+info 'Checking bundle...'
+bundle check || bundle install
+
+info 'RuboCop...'
+auto/check-style
+
+info 'RSpec...'
+auto/test
+
+succeeded=true
+success 'All pre-push checks passed! =)'
