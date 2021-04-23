@@ -2,7 +2,13 @@
 
 # frozen_string_literal: true
 
+$LOAD_PATH << File.expand_path('../lib', __dir__)
+
+require 'clamp'
+
 require 'renamespace'
+
+Clamp.allow_options_after_parameters = true
 
 Clamp do
   self.description = <<~TEXT
