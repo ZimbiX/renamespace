@@ -1,5 +1,3 @@
-#!/usr/bin/env ruby
-
 # frozen_string_literal: true
 
 # require 'bundler/inline'
@@ -18,7 +16,7 @@ require 'clamp'
 require 'facets/string/camelcase'
 require 'rainbow'
 
-class Renamespace
+class Renamespace # rubocop:disable Metrics/ClassLength
   def initialize(source_file_path:, destination_file_path:)
     @source_file_path = source_file_path
     @destination_file_path = destination_file_path
@@ -45,7 +43,7 @@ class Renamespace
   end
 
   def move_spec_file
-    if !File.exist?(spec_path(source_file_path))
+    unless File.exist?(spec_path(source_file_path))
       puts Rainbow("Warning: spec file missing for #{spec_path(destination_file_path)}").orange
       return
     end
@@ -62,7 +60,7 @@ class Renamespace
       content_new =
         content_orig
           .gsub(/require_relative '([^']+)'/) do
-            joined_path = File.join(require_for_path(dir_for_file_path(path)), $1)
+            joined_path = File.join(require_for_path(dir_for_file_path(path)), Regexp.last_match(1))
             "require '%s'" % Pathname.new(joined_path).cleanpath
           end
       File.write(path, content_new) unless content_orig == content_new
@@ -80,17 +78,18 @@ class Renamespace
     end
   end
 
-  def renamespace_file_content(content)
+  def renamespace_file_content(content) # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
     content = content.dup
     source, dest = source_and_dest_namespace_elements_without_common_prefix
     namespace_element_replacements = dest.reverse.zip(source.reverse)
     namespace_element_replacements.each_with_index do |(namespace_element_new, namespace_element_old), i|
       old_parent_namespace = namespace_element_replacements.last(i + 1).map(&:last).reverse.join('::')
-      old_parent_namespace += '::' if old_parent_namespace.length > 0
+      old_parent_namespace += '::' unless old_parent_namespace.empty?
       if namespace_element_old
         # Replace existing namespace
         content.sub!(/(class|module) #{namespace_element_old}\b( < (\S+))?/) do
-          "#{$1} RENAMESPACED_#{namespace_element_new}" + ($3 ? " < #{old_parent_namespace}#{$3}" : '')
+          "#{Regexp.last_match(1)} RENAMESPACED_#{namespace_element_new}" +
+            (Regexp.last_match(3) ? " < #{old_parent_namespace}#{Regexp.last_match(3)}" : '')
         end
       else
         # Adding new namespace
@@ -114,12 +113,10 @@ class Renamespace
     source = namespace_elements_for_path(source_file_path)
     dest = namespace_elements_for_path(destination_file_path)
     source.each do
-      if source.first == dest.first
-        source.shift
-        dest.shift
-      else
-        break
-      end
+      break if source.first != dest.first
+
+      source.shift
+      dest.shift
     end
     [source, dest]
   end
@@ -180,7 +177,7 @@ class Renamespace
   end
 end
 
-if __FILE__ == $0
+if __FILE__ == $PROGRAM_NAME
   Clamp do
     self.description = <<~TEXT
       Renamespaces a Ruby source file:
