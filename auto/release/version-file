@@ -1,0 +1,3 @@
+#!/bin/bash
+
+VERSION_FILE=lib/renamespace/version.rb

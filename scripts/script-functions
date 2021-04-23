@@ -1,0 +1,46 @@
+#!/bin/bash
+
+set -Eeuo pipefail
+
+info() {
+  printf "\\e[32m"
+  printf "\\e[1m"
+  printf '==> '
+  printf "\\e[36m"
+  printf "$1"
+  printf "\\e[0m\\n"
+}
+
+err() {
+  info "\\e[31m$1"
+  exit 1
+}
+
+success() {
+  info "\\e[32m$1"
+}
+
+# Log an error, also producing a notification on Gnome
+notify-err() {
+  local title="$1"
+  local message="$2"
+  local notification_file="/tmp/$3"
+  notify-send.sh --icon=error --urgency=low --replace-file="$notification_file" "$title" "$message"
+  err "$title - $message"
+}
+
+# Dismiss a Gnome notification
+notify-clear() {
+  local notification_file="/tmp/$1"
+  if [ -f "$notification_file" ]; then
+    notify-send.sh --close="$(cat "$notification_file")"
+  fi
+}
+
+# Use the Gnome notification utility if it exists
+# https://github.com/vlevit/notify-send.sh
+notify-send.sh() {
+  if [ -x "$(command -v notify-send.sh)" ]; then
+    notify-send.sh "$@"
+  fi
+}
