@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative 'renamespace'
+require 'spec_helper'
 
 RSpec.describe Renamespace do
   let(:renamespace) do
