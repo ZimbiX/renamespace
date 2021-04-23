@@ -1,35 +1,48 @@
 # Renamespace
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/renamespace`. To experiment with that code, run `bin/console` for an interactive prompt.
+A command-line tool to help Ruby developers refactor class/module namespacing.
 
-TODO: Delete this and the text above, and describe your gem
+Renamespaces a Ruby source file:
+
+- Moves the file
+- Updates, to match the new location, the name of the class/module within the file, including its namespacing
+- Updates usages of the class/module
+- Updates the path to the file in all requires
+- Moves the associated spec file
+
+Class/module namespaces are derived from the paths provided.
+
+## Contents
+
+<!-- MarkdownTOC autolink=true -->
+
+- [Installation](#installation)
+- [Usage](#usage)
+
+<!-- /MarkdownTOC -->
 
 ## Installation
 
-Add this line to your application's Gemfile:
+The executable is distributed as a gem.
 
-```ruby
-gem 'renamespace'
+```bash
+$ gem install --clear-sources --source "https://$GITHUB_USERNAME:$GITHUB_ACCESS_TOKEN@rubygems.pkg.github.com/greensync" renamespace
 ```
-
-And then execute:
-
-    $ bundle install
-
-Or install it yourself as:
-
-    $ gem install renamespace
 
 ## Usage
 
-TODO: Write usage instructions here
+```bash
+$ renamespace
+```
 
-## Development
+e.g.:
 
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
+```bash
+$ renamespace lib/dex_registration/repositories/cursors.rb lib/dex_registration/cursors/repository.rb
+```
 
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and the created tag, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+For more info, see:
 
-## Contributing
-
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/renamespace.
+```bash
+$ renamespace --help
+```
