@@ -156,7 +156,6 @@ RSpec.describe Renamespace do
       end
     end
 
-
     context 'with inheritance from a root class' do
       let(:paths) do
         %w[

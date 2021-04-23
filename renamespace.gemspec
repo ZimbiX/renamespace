@@ -25,7 +25,7 @@ Gem::Specification.new do |spec|
       exe/**/*
       lib/**/*
       README.md
-    ]
+    ],
   )
   spec.bindir        = 'exe'
   spec.executables   = spec.files.grep(%r{\Aexe/}) { |f| File.basename(f) }

@@ -10,7 +10,7 @@ require 'renamespace'
 
 Clamp.allow_options_after_parameters = true
 
-Clamp do
+Clamp do # rubocop:disable Metrics/BlockLength
   self.description = <<~TEXT
     Renamespaces a Ruby source file:
 
@@ -28,9 +28,12 @@ Clamp do
   parameter 'SOURCE_FILE_PATH', 'The current path of the Ruby source code file to renamespace'
   parameter 'DESTINATION_FILE_PATH', 'The desired desination path of the file'
 
-  option ['-o', '--can-omit-prefixes'], 'COUNT', 'How many levels of namespacing to omit up to when replacing usages of the class/module. Too low, and some cases may be missed; too high, and some incorrect replacements are likely to occur', default: 0, &method(:Integer)
+  option ['-o', '--can-omit-prefixes'], 'COUNT',
+    'How many levels of namespacing to omit up to when replacing usages of the class/module. ' \
+    'Too low, and some cases may be missed; too high, and some incorrect replacements are likely to occur',
+    default: 0, &method(:Integer)
 
-  option "--version", :flag, "Show version" do
+  option '--version', :flag, 'Show version' do
     puts Renamespace::VERSION
     exit 0
   end

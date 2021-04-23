@@ -27,7 +27,7 @@ class Renamespace # rubocop:disable Metrics/ClassLength
 
   attr_reader :source_file_path, :destination_file_path, :can_omit_prefixes_count
 
-  def renamespace_file
+  def renamespace_file # rubocop:disable Metrics/AbcSize
     puts '%s -> %s' % [namespace_for_path(source_file_path), namespace_for_path(destination_file_path)]
     content_new = renamespace_file_content(File.read(source_file_path))
     create_directories_to_file(destination_file_path)
@@ -35,16 +35,18 @@ class Renamespace # rubocop:disable Metrics/ClassLength
     File.delete(source_file_path) unless source_file_path == destination_file_path
   end
 
-  def move_spec_file
+  def move_spec_file # rubocop:disable Metrics/AbcSize
     unless File.exist?(spec_path(source_file_path))
       puts Rainbow("Warning: spec file missing for #{spec_path(destination_file_path)}").orange
       return
     end
+    return if source_file_path == destination_file_path
+
     create_directories_to_file(spec_path(destination_file_path))
     FileUtils.mv(
       spec_path(source_file_path),
       spec_path(destination_file_path),
-    ) unless source_file_path == destination_file_path
+    )
   end
 
   def expand_relative_requires_within_all_files
@@ -60,7 +62,7 @@ class Renamespace # rubocop:disable Metrics/ClassLength
     end
   end
 
-  def rename_within_all_files
+  def rename_within_all_files # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
     logged_replacements = []
     all_ruby_file_paths.each do |path|
       content_orig = File.read(path)
@@ -69,7 +71,8 @@ class Renamespace # rubocop:disable Metrics/ClassLength
       namespace_elements_source = namespace_elements_for_path(source_file_path)
       namespace_elements_dest = namespace_elements_for_path(destination_file_path)
       (1 + can_omit_prefixes_count).times do
-        a, b = namespace_elements_source.join('::'), namespace_elements_dest.join('::')
+        a = namespace_elements_source.join('::')
+        b = namespace_elements_dest.join('::')
         unless logged_replacements.include?([a, b])
           logged_replacements << [a, b]
           puts Rainbow('%s -> %s' % [a, b]).blue
