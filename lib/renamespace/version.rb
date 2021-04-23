@@ -1,5 +1,5 @@
 # frozen_string_literal: true
 
-module Renamespace
-  VERSION = "0.1.0"
+class Renamespace
+  VERSION = '0.1.0'
 end
