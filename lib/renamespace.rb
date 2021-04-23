@@ -176,29 +176,3 @@ class Renamespace # rubocop:disable Metrics/ClassLength
     Dir['**/'].reverse_each { |d| Dir.rmdir(d) if Dir.empty?(d) }
   end
 end
-
-if __FILE__ == $PROGRAM_NAME
-  Clamp do
-    self.description = <<~TEXT
-      Renamespaces a Ruby source file:
-
-      - Moves the file
-      - Updates, to match the new location, the name of the class/module within the file, including its namespacing
-      - Updates usages of the class/module
-      - Updates the path to the file in all requires
-      - Moves the associated spec file
-
-      Class/module namespaces are derived from the paths provided.
-    TEXT
-
-    parameter 'SOURCE_FILE_PATH', 'The current path of the Ruby source code file to renamespace'
-    parameter 'DESTINATION_FILE_PATH', 'The desired desination path of the file'
-
-    def execute
-      Renamespace.new(
-        source_file_path: source_file_path,
-        destination_file_path: destination_file_path,
-      ).call
-    end
-  end
-end
