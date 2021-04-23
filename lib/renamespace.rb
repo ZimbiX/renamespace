@@ -6,6 +6,8 @@ require 'pathname'
 require 'facets/string/camelcase'
 require 'rainbow'
 
+require_relative 'renamespace/version'
+
 class Renamespace # rubocop:disable Metrics/ClassLength
   def initialize(source_file_path:, destination_file_path:, can_omit_prefixes_count:)
     @source_file_path = source_file_path
