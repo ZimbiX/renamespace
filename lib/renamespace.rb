@@ -6,6 +6,7 @@ require 'pathname'
 require 'facets/string/camelcase'
 require 'rainbow'
 
+require_relative 'renamespace/directories'
 require_relative 'renamespace/version'
 
 class Renamespace # rubocop:disable Metrics/ClassLength
@@ -30,7 +31,7 @@ class Renamespace # rubocop:disable Metrics/ClassLength
   def move_and_renamespace_source_file # rubocop:disable Metrics/AbcSize
     puts '%s -> %s' % [namespace_for_path(source_file_path), namespace_for_path(destination_file_path)]
     content_new = renamespace_file_content(File.read(source_file_path))
-    create_directories_to_file(destination_file_path)
+    Renamespace::Directories.create_directories_to_file(destination_file_path)
     File.write(destination_file_path, content_new)
     File.delete(source_file_path) unless source_file_path == destination_file_path
   end
@@ -42,7 +43,7 @@ class Renamespace # rubocop:disable Metrics/ClassLength
     end
     return if source_file_path == destination_file_path
 
-    create_directories_to_file(spec_path(destination_file_path))
+    Renamespace::Directories.create_directories_to_file(spec_path(destination_file_path))
     FileUtils.mv(
       spec_path(source_file_path),
       spec_path(destination_file_path),
@@ -55,7 +56,7 @@ class Renamespace # rubocop:disable Metrics/ClassLength
       content_new =
         content_orig
           .gsub(/require_relative '([^']+)'/) do
-            joined_path = File.join(require_for_path(dir_for_file_path(path)), Regexp.last_match(1))
+            joined_path = File.join(require_for_path(Renamespace::Directories.dir_for_file_path(path)), Regexp.last_match(1))
             "require '%s'" % Pathname.new(joined_path).cleanpath
           end
       File.write(path, content_new) unless content_orig == content_new
@@ -83,6 +84,10 @@ class Renamespace # rubocop:disable Metrics/ClassLength
       end
       File.write(path, content_new) unless content_orig == content_new
     end
+  end
+
+  def remove_empty_dirs
+    Renamespace::Directories.remove_empty_dirs
   end
 
   def renamespace_file_content(content) # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
@@ -175,17 +180,5 @@ class Renamespace # rubocop:disable Metrics/ClassLength
     else
       possible_spec_paths[0]
     end
-  end
-
-  def create_directories_to_file(file_path)
-    FileUtils.mkdir_p(dir_for_file_path(file_path))
-  end
-
-  def dir_for_file_path(file_path)
-    file_path.sub(%r{/[^/]+$}, '')
-  end
-
-  def remove_empty_dirs
-    Dir['**/'].reverse_each { |d| Dir.rmdir(d) if Dir.empty?(d) }
   end
 end
