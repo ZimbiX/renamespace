@@ -190,5 +190,41 @@ RSpec.describe Renamespace do
         expect(renamespace.send(:renamespace_file_content, source_content)).to eq(expected_result_content)
       end
     end
+
+    context 'with namespaces having the same names' do
+      let(:paths) do
+        %w[
+          lib/a/b/a.rb
+          lib/x/y/z.rb
+        ]
+      end
+
+      let(:source_content) do
+        <<~RUBY
+          module A
+            module B
+              class A
+              end
+            end
+          end
+        RUBY
+      end
+
+      let(:expected_result_content) do
+        <<~RUBY
+          module X
+            module Y
+              class Z
+              end
+            end
+          end
+        RUBY
+      end
+
+      it 'preserves the namespacing of the superclass' do
+        pending
+        expect(renamespace.send(:renamespace_file_content, source_content)).to eq(expected_result_content)
+      end
+    end
   end
 end
