@@ -124,16 +124,16 @@ RSpec.describe Renamespace do
     context 'with inheritance' do
       let(:paths) do
         %w[
-          lib/a/x.rb
-          lib/b/x.rb
+          lib/my_app/models/site.rb
+          lib/my_app/sites/model.rb
         ]
       end
 
       let(:source_content) do
         <<~RUBY
-          module App
-            module A
-              class X < Super
+          module MyApp
+            module Models
+              class Site < BaseModel
               end
             end
           end
@@ -142,9 +142,9 @@ RSpec.describe Renamespace do
 
       let(:expected_result_content) do
         <<~RUBY
-          module App
-            module B
-              class X < A::Super
+          module MyApp
+            module Sites
+              class Model < Models::BaseModel
               end
             end
           end
