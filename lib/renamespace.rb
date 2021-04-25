@@ -1,18 +1,24 @@
 # frozen_string_literal: true
 
 require 'fileutils'
-require 'pathname'
 
 require 'facets/string/camelcase'
 require 'rainbow'
 
 require_relative 'renamespace/directories'
+require_relative 'renamespace/expand_relative_requires_within_all_files'
+require_relative 'renamespace/move_and_renamespace_source_file'
+require_relative 'renamespace/move_spec_file'
+require_relative 'renamespace/rename_within_all_files'
+require_relative 'renamespace/paths'
 require_relative 'renamespace/version'
 
 class Renamespace # rubocop:disable Metrics/ClassLength
   def initialize(source_file_path:, destination_file_path:, can_omit_prefixes_count:)
-    @source_file_path = source_file_path
-    @destination_file_path = destination_file_path
+    @paths ||= Renamespace::Paths.new(
+      source: source_file_path,
+      destination: destination_file_path,
+    )
     @can_omit_prefixes_count = can_omit_prefixes_count
   end
 
@@ -26,159 +32,25 @@ class Renamespace # rubocop:disable Metrics/ClassLength
 
   private
 
-  attr_reader :source_file_path, :destination_file_path, :can_omit_prefixes_count
+  attr_reader :paths, :can_omit_prefixes_count
 
   def move_and_renamespace_source_file # rubocop:disable Metrics/AbcSize
-    puts '%s -> %s' % [namespace_for_path(source_file_path), namespace_for_path(destination_file_path)]
-    content_new = renamespace_file_content(File.read(source_file_path))
-    Renamespace::Directories.create_directories_to_file(destination_file_path)
-    File.write(destination_file_path, content_new)
-    File.delete(source_file_path) unless source_file_path == destination_file_path
+    Renamespace::MoveAndRenamespaceSourceFile.new(paths: paths).call
   end
 
-  def move_spec_file # rubocop:disable Metrics/AbcSize
-    unless File.exist?(spec_path(source_file_path))
-      puts Rainbow("Warning: spec file missing for #{spec_path(destination_file_path)}").orange
-      return
-    end
-    return if source_file_path == destination_file_path
-
-    Renamespace::Directories.create_directories_to_file(spec_path(destination_file_path))
-    FileUtils.mv(
-      spec_path(source_file_path),
-      spec_path(destination_file_path),
-    )
+  def move_spec_file
+    Renamespace::MoveSpecFile.new(paths: paths).call
   end
 
   def expand_relative_requires_within_all_files
-    (all_ruby_file_paths - relative_requires_expansion_exclusions).each do |path|
-      content_orig = File.read(path)
-      content_new =
-        content_orig
-          .gsub(/require_relative '([^']+)'/) do
-            joined_path = File.join(require_for_path(Renamespace::Directories.dir_for_file_path(path)), Regexp.last_match(1))
-            "require '%s'" % Pathname.new(joined_path).cleanpath
-          end
-      File.write(path, content_new) unless content_orig == content_new
-    end
+    Renamespace::ExpandRelativeRequiresWithinAllFiles.new.call
   end
 
-  def rename_within_all_files # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
-    logged_replacements = []
-    all_ruby_file_paths.each do |path|
-      content_orig = File.read(path)
-      content_new = content_orig.dup
-      content_new.gsub!(require_for_path(source_file_path), require_for_path(destination_file_path))
-      namespace_elements_source = namespace_elements_for_path(source_file_path)
-      namespace_elements_dest = namespace_elements_for_path(destination_file_path)
-      (1 + can_omit_prefixes_count).times do
-        a = namespace_elements_source.join('::')
-        b = namespace_elements_dest.join('::')
-        unless logged_replacements.include?([a, b])
-          logged_replacements << [a, b]
-          puts Rainbow('%s -> %s' % [a, b]).blue
-        end
-        content_new.gsub!(a, b)
-        namespace_elements_source.shift
-        namespace_elements_dest.shift
-      end
-      File.write(path, content_new) unless content_orig == content_new
-    end
+  def rename_within_all_files
+    Renamespace::RenameWithinAllFiles.new(paths: paths, can_omit_prefixes_count: can_omit_prefixes_count).call
   end
 
   def remove_empty_dirs
     Renamespace::Directories.remove_empty_dirs
-  end
-
-  def renamespace_file_content(content) # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
-    content = content.dup
-    source, dest = source_and_dest_namespace_elements_without_common_prefix
-    namespace_element_replacements = dest.reverse.zip(source.reverse)
-    namespace_element_replacements.each_with_index do |(namespace_element_new, namespace_element_old), i|
-      old_parent_namespace = namespace_element_replacements.last(i + 1).map(&:last).reverse.join('::')
-      old_parent_namespace += '::' unless old_parent_namespace.empty?
-      if namespace_element_old
-        # Replacing existing namespace
-        content.sub!(/(class|module) #{namespace_element_old}\b( < (\S+))?/) do
-          klass_line = "#{Regexp.last_match(1)} RENAMESPACED_#{namespace_element_new}"
-          Regexp.last_match(3)&.tap do |superclass_orig|
-            klass_line += ' < '
-            klass_line += old_parent_namespace unless superclass_orig.start_with?('::')
-            klass_line += superclass_orig
-          end
-          klass_line
-        end
-      else
-        # Adding new namespace
-        previous_new_namespace_element = namespace_element_replacements[i - 1].first
-        content.sub!(/((class|module) RENAMESPACED_#{previous_new_namespace_element})/, "module RENAMESPACED_#{namespace_element_new}; \\1")
-        content.sub!(/^(end)/, '\1; end')
-      end
-    end
-    content.gsub!('RENAMESPACED_', '')
-    content
-  end
-
-  def relative_requires_expansion_exclusions
-    %w[
-      spec/spec_helper.rb
-      renamespace_spec.rb
-      lib/bootstrap.rb
-    ]
-  end
-
-  def source_and_dest_namespace_elements_without_common_prefix
-    source = namespace_elements_for_path(source_file_path)
-    dest = namespace_elements_for_path(destination_file_path)
-    source.each do
-      break if source.first != dest.first
-
-      source.shift
-      dest.shift
-    end
-    [source, dest]
-  end
-
-  def namespace_for_path(path)
-    namespace_elements_for_path(path).join('::')
-  end
-
-  def require_for_path(path)
-    path_elements_for_require(path).join('/')
-  end
-
-  def namespace_elements_for_path(path)
-    path_elements_for_require(path)
-      .map(&method(:namespace_element_from_path_element))
-  end
-
-  def path_elements_for_require(path)
-    path.sub(%r{^lib/}, '').chomp('.rb').split('/')
-  end
-
-  def namespace_element_from_path_element(path_element)
-    custom_camelcasings.fetch(path_element) { path_element.upper_camelcase }
-  end
-
-  def custom_camelcasings
-    {
-      'greensync' => 'GreenSync',
-    }
-  end
-
-  def all_ruby_file_paths
-    (Dir.glob('**/*.rb') - %w[invert_namespaces.rb renamespace.rb])
-  end
-
-  def spec_path(path)
-    possible_spec_paths = [
-      path.sub('.rb', '_spec.rb').sub(/^lib/, 'spec'),
-      path.sub('.rb', '_spec.rb').sub(/^lib/, 'spec/lib'),
-    ]
-    if File.exist?(possible_spec_paths[1])
-      possible_spec_paths[1]
-    else
-      possible_spec_paths[0]
-    end
   end
 end
