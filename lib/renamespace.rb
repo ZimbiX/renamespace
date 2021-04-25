@@ -16,7 +16,7 @@ class Renamespace # rubocop:disable Metrics/ClassLength
   end
 
   def call
-    renamespace_file
+    move_and_renamespace_source_file
     move_spec_file
     expand_relative_requires_within_all_files
     rename_within_all_files
@@ -27,7 +27,7 @@ class Renamespace # rubocop:disable Metrics/ClassLength
 
   attr_reader :source_file_path, :destination_file_path, :can_omit_prefixes_count
 
-  def renamespace_file # rubocop:disable Metrics/AbcSize
+  def move_and_renamespace_source_file # rubocop:disable Metrics/AbcSize
     puts '%s -> %s' % [namespace_for_path(source_file_path), namespace_for_path(destination_file_path)]
     content_new = renamespace_file_content(File.read(source_file_path))
     create_directories_to_file(destination_file_path)
