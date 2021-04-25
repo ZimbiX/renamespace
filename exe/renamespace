@@ -33,6 +33,8 @@ Clamp do # rubocop:disable Metrics/BlockLength
     'Too low, and some cases may be missed; too high, and some incorrect replacements are likely to occur',
     default: 0, &method(:Integer)
 
+  option '--no-superclass-prefixing', :flag, "Don't prefix superclasses with their previous namespace"
+
   option '--version', :flag, 'Show version' do
     puts Renamespace::VERSION
     exit 0
@@ -43,6 +45,7 @@ Clamp do # rubocop:disable Metrics/BlockLength
       source_file_path: source_file_path,
       destination_file_path: destination_file_path,
       can_omit_prefixes_count: can_omit_prefixes,
+      no_superclass_prefixing: no_superclass_prefixing?,
     ).call
   end
 end

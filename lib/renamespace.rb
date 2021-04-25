@@ -14,12 +14,13 @@ require_relative 'renamespace/paths'
 require_relative 'renamespace/version'
 
 class Renamespace
-  def initialize(source_file_path:, destination_file_path:, can_omit_prefixes_count:)
+  def initialize(source_file_path:, destination_file_path:, can_omit_prefixes_count:, no_superclass_prefixing:)
     @paths = Renamespace::Paths.new(
       source: source_file_path,
       destination: destination_file_path,
     )
     @can_omit_prefixes_count = can_omit_prefixes_count
+    @no_superclass_prefixing = no_superclass_prefixing
   end
 
   def call
@@ -32,10 +33,13 @@ class Renamespace
 
   private
 
-  attr_reader :paths, :can_omit_prefixes_count
+  attr_reader :paths, :can_omit_prefixes_count, :no_superclass_prefixing
 
   def move_and_renamespace_source_file
-    Renamespace::MoveAndRenamespaceSourceFile.new(paths: paths).call
+    Renamespace::MoveAndRenamespaceSourceFile.new(
+      paths: paths,
+      no_superclass_prefixing: no_superclass_prefixing,
+    ).call
   end
 
   def move_spec_file

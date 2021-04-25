@@ -4,7 +4,10 @@ require 'spec_helper'
 
 RSpec.describe Renamespace::MoveAndRenamespaceSourceFile do
   subject(:move_and_renamespace_source_file) do
-    described_class.new(paths: paths_obj).call
+    described_class.new(
+      paths: paths_obj,
+      no_superclass_prefixing: false,
+    ).call
   end
 
   let(:paths_obj) do

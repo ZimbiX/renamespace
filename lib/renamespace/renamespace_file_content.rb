@@ -2,11 +2,12 @@
 
 class Renamespace
   class RenamespaceFileContent
-    def initialize(paths:)
+    def initialize(paths:, no_superclass_prefixing:)
       @paths = paths
+      @no_superclass_prefixing = no_superclass_prefixing
     end
 
-    def call(content) # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+    def call(content) # rubocop:disable Metrics/AbcSize, Metrics/MethodLength, Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
       content = content.dup
       source, dest = source_and_dest_namespace_elements_without_common_prefix
       namespace_element_replacements = dest.reverse.zip(source.reverse)
@@ -19,7 +20,7 @@ class Renamespace
             klass_line = "#{Regexp.last_match(1)} RENAMESPACED_#{namespace_element_new}"
             Regexp.last_match(3)&.tap do |superclass_orig|
               klass_line += ' < '
-              klass_line += old_parent_namespace unless superclass_orig.start_with?('::')
+              klass_line += old_parent_namespace unless superclass_orig.start_with?('::') || no_superclass_prefixing?
               klass_line += superclass_orig
             end
             klass_line
@@ -52,6 +53,10 @@ class Renamespace
         dest.shift
       end
       [source, dest]
+    end
+
+    def no_superclass_prefixing?
+      @no_superclass_prefixing
     end
   end
 end

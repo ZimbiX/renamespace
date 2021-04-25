@@ -5,8 +5,9 @@ require_relative 'renamespace_file_content'
 
 class Renamespace
   class MoveAndRenamespaceSourceFile
-    def initialize(paths:)
+    def initialize(paths:, no_superclass_prefixing:)
       @paths = paths
+      @no_superclass_prefixing = no_superclass_prefixing
     end
 
     def call
@@ -17,7 +18,7 @@ class Renamespace
 
     private
 
-    attr_reader :paths
+    attr_reader :paths, :no_superclass_prefixing
 
     def log_source_and_destination_namespaces
       puts '%s -> %s' % [paths.source_namespace, paths.destination_namespace]
@@ -34,7 +35,10 @@ class Renamespace
 
     def renamespaced_file_content
       content = File.read(paths.source)
-      Renamespace::RenamespaceFileContent.new(paths: paths).call(content)
+      Renamespace::RenamespaceFileContent.new(
+        paths: paths,
+        no_superclass_prefixing: no_superclass_prefixing,
+      ).call(content)
     end
   end
 end
