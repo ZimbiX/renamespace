@@ -6,7 +6,7 @@ class Renamespace
       @paths = paths
     end
 
-    def call(content)
+    def call(content) # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
       content = content.dup
       source, dest = source_and_dest_namespace_elements_without_common_prefix
       namespace_element_replacements = dest.reverse.zip(source.reverse)
@@ -27,7 +27,10 @@ class Renamespace
         else
           # Adding new namespace
           previous_new_namespace_element = namespace_element_replacements[i - 1].first
-          content.sub!(/((class|module) RENAMESPACED_#{previous_new_namespace_element})/, "module RENAMESPACED_#{namespace_element_new}; \\1")
+          content.sub!(
+            /((class|module) RENAMESPACED_#{previous_new_namespace_element})/,
+            "module RENAMESPACED_#{namespace_element_new}; \\1",
+          )
           content.sub!(/^(end)/, '\1; end')
         end
       end

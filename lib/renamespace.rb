@@ -13,9 +13,9 @@ require_relative 'renamespace/rename_within_all_files'
 require_relative 'renamespace/paths'
 require_relative 'renamespace/version'
 
-class Renamespace # rubocop:disable Metrics/ClassLength
+class Renamespace
   def initialize(source_file_path:, destination_file_path:, can_omit_prefixes_count:)
-    @paths ||= Renamespace::Paths.new(
+    @paths = Renamespace::Paths.new(
       source: source_file_path,
       destination: destination_file_path,
     )
@@ -34,7 +34,7 @@ class Renamespace # rubocop:disable Metrics/ClassLength
 
   attr_reader :paths, :can_omit_prefixes_count
 
-  def move_and_renamespace_source_file # rubocop:disable Metrics/AbcSize
+  def move_and_renamespace_source_file
     Renamespace::MoveAndRenamespaceSourceFile.new(paths: paths).call
   end
 

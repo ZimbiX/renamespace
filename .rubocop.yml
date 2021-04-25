@@ -160,3 +160,5 @@ Style/RedundantArgument:
   Enabled: true
 Style/SwapValues:
   Enabled: true
+Style/PerlBackrefs:
+  Enabled: false

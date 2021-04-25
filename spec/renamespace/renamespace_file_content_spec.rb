@@ -6,6 +6,7 @@ RSpec.describe Renamespace::RenamespaceFileContent do
   subject(:result_content) do
     described_class.new(paths: paths_obj).call(source_content)
   end
+
   let(:paths_obj) do
     Renamespace::Paths.new(
       source: paths[0],

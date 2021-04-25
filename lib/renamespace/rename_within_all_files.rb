@@ -11,8 +11,7 @@ class Renamespace
       @can_omit_prefixes_count = can_omit_prefixes_count
     end
 
-    def call # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
-      logged_replacements = []
+    def call
       Renamespace::Paths.all_ruby_file_paths.each do |path|
         content_orig = File.read(path)
         content_new = rename_within_file_content(content_orig)
