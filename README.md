@@ -33,6 +33,8 @@ Class/module namespaces are derived from the paths provided.
 
 If you change the number of namespaces, expect to have to run RuboCop autocorrect afterwards to clean up formatting.
 
+The namespace replacing is not super smart yet, so it might get it wrong sometimes. If it does, see `renamespace --help` for some options that might help.
+
 ## Installation
 
 The executable is distributed as a gem. You can install it from GitHub Packages directly like so:
