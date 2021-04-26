@@ -40,7 +40,7 @@ The namespace replacing is not super smart yet, so it might get it wrong sometim
 The executable is distributed as a gem. You can install it from GitHub Packages directly like so:
 
 ```bash
-$ GEM=renamespace ruby -r bundler/inline -e "gemfile(ui: true) { source 'https://rubygems.org'; source('https://rubygems.pkg.github.com/greensync') { gem ENV['GEM'] } }"
+$ gem install renamespace
 ```
 
 And then if you're using rbenv:

@@ -9,16 +9,14 @@ Gem::Specification.new do |spec|
   spec.email         = ['brendan@weibrecht.net.au']
 
   spec.summary       = 'A command-line tool to help Ruby developers refactor class/module namespacing'
-  spec.homepage      = 'https://github.com/greensync/renamespace'
+  spec.homepage      = 'https://github.com/ZimbiX/renamespace'
   spec.required_ruby_version = Gem::Requirement.new('>= 2.5.0')
-
-  spec.metadata['allowed_push_host'] = 'https://rubygems.pkg.github.com/greensync'
 
   spec.metadata['homepage_uri'] = spec.homepage
   spec.metadata['source_code_uri'] = spec.homepage
   spec.metadata['changelog_uri'] = "#{spec.homepage}/releases"
 
-  spec.license = 'Nonstandard'
+  spec.license = 'GPL-3.0'
 
   spec.files = Dir.glob(
     %w[
