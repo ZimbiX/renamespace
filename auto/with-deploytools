@@ -10,5 +10,5 @@ docker run --rm -it \
   --mount "type=bind,src=$PWD,dst=/work" \
   -w /work \
   -v ~/.docker-rc.d/:/.docker-rc.d/:ro \
-  asia.gcr.io/greensync-container-registry/deploytools:2021.03 \
+  asia.gcr.io/greensync-container-registry/deploytools:1.0.3 \
   "${@-bash}"
