@@ -8,13 +8,19 @@ jobs:
   check-style:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Docker layer caching
+        uses: satackey/action-docker-layer-caching@v0.0.11
       - name: RuboCop
         run: auto/check-style
 
   test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Docker layer caching
+        uses: satackey/action-docker-layer-caching@v0.0.11
       - name: RSpec
         run: auto/test
