@@ -32,7 +32,7 @@ class Renamespace
             /((class|module) RENAMESPACED_#{previous_new_namespace_element})/,
             "module RENAMESPACED_#{namespace_element_new}; \\1",
           )
-          content.sub!(/^(end)/, '\1; end')
+          content.sub!(/^(end)/, "\\1\nend")
         end
       end
       content.gsub!('RENAMESPACED_', '')

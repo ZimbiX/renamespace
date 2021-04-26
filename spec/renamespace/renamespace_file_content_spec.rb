@@ -78,7 +78,8 @@ RSpec.describe Renamespace::RenamespaceFileContent do
             class ImportCsv
             end
           end
-        end; end
+        end
+        end
       RUBY
     end
 
@@ -117,7 +118,9 @@ RSpec.describe Renamespace::RenamespaceFileContent do
               end
             end
           end
-        end; end; end
+        end
+        end
+        end
       RUBY
     end
 
