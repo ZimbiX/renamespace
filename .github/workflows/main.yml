@@ -16,7 +16,7 @@ jobs:
         run: docker-compose pull
 
       - name: Docker layer caching
-        uses: satackey/action-docker-layer-caching@v0.0.11
+        uses: ZimbiX/action-docker-layer-caching@support-images-identified-by-sha
         continue-on-error: true
 
       - name: RuboCop
@@ -33,7 +33,7 @@ jobs:
         run: docker-compose pull
 
       - name: Docker layer caching
-        uses: satackey/action-docker-layer-caching@v0.0.11
+        uses: ZimbiX/action-docker-layer-caching@support-images-identified-by-sha
         continue-on-error: true
 
       - name: RSpec
