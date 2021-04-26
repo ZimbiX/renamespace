@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    renamespace (0.1.4)
+    renamespace (0.1.5)
       clamp (~> 1.3.2)
       facets (~> 3.1.0)
       rainbow (~> 3.0.0)
