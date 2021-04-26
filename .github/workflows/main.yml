@@ -1,0 +1,20 @@
+name: CI
+on:
+  - push
+  - pull_request
+  - workflow_dispatch
+jobs:
+
+  check-style:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: RuboCop
+        run: auto/check-style
+
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: RSpec
+        run: auto/test
