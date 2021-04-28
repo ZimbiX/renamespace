@@ -112,8 +112,6 @@ chmod +x .git/hooks/pre-push
 
 ### Release
 
-First, [make sure your credentials are set up for GitHub Package Registry according to the Handbook](https://handbook.greensync.org/product/intro/getting-started/#github-package-registry-and-ruby-gems).
-
 To release a new version:
 
 ```bash
@@ -124,7 +122,7 @@ This takes care of the whole process:
 
 - Incrementing the version number (the patch number by default)
 - Tagging & pushing commits
-- Publishing the gem to GitHub Packages
+- Publishing the gem to RubyGems
 - Creating a draft GitHub release
 
 To increment the minor or major versions instead of the patch number, run `auto/release/update-version` with `--minor` or `--major`.
