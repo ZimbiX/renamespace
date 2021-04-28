@@ -1,6 +1,6 @@
 # Renamespace
 
-[![CI status](https://github.com/ZimbiX/renamespace/actions/workflows/main.yml/badge.svg?branch=master)](https://github.com/ZimbiX/renamespace/actions/workflows/main.yml)
+[![CI status](https://github.com/ZimbiX/renamespace/actions/workflows/main.yml/badge.svg?branch=master)](https://github.com/ZimbiX/renamespace/actions/workflows/main.yml) [![Gem Version](https://badge.fury.io/rb/renamespace.svg)](https://rubygems.org/gems/renamespace)
 
 A command-line tool to help Ruby developers refactor class/module namespacing.
 
