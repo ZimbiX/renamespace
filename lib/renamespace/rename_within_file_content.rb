@@ -24,11 +24,15 @@ class Renamespace
     def replace_references(content)
       (1 + can_omit_prefixes_count).times do
         replacements_logger.log(search_str, replace_str)
-        content = content.gsub(search_str, replace_str)
+        content = content.gsub(search_regex, replace_str)
         namespace_elements_source.shift
         namespace_elements_dest.shift
       end
       content
+    end
+
+    def search_regex
+      /\b#{namespace_elements_source.join('::')}\b/
     end
 
     def search_str
