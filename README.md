@@ -37,7 +37,7 @@ The namespace replacing is not super smart yet, so it might get it wrong sometim
 
 ## Installation
 
-The executable is distributed as a gem. You can install it from GitHub Packages directly like so:
+The executable is distributed as a gem. You can install it from RubyGems directly like so:
 
 ```bash
 $ gem install renamespace
