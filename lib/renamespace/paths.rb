@@ -26,6 +26,7 @@ class Renamespace
     def self.custom_camelcasings
       {
         'greensync' => 'GreenSync',
+        'goodwe' => 'GoodWe',
       }
     end
 
